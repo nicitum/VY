@@ -33,10 +33,12 @@ export function Invitation() {
           <div className="mt-12 text-center">
             <Ornament className="mb-8" />
             <p className="mx-auto max-w-2xl font-display text-xl leading-relaxed text-cream-200/80 sm:text-2xl">
-              We invite you to celebrate our special day, as years of friendship
-              and love become a forever promise. Your presence and blessings
-              will make this cherished moment even more meaningful.
-            </p>
+                With the blessings of our families and the grace of destiny,
+                two hearts come together in a beautiful bond of love and
+                togetherness. We invite you to celebrate the beginning of
+                our forever journey. Your presence and blessings will make
+                our special day even more meaningful.
+              </p>
             <Ornament className="mt-8" />
           </div>
         </Reveal>

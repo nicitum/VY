@@ -34,6 +34,11 @@ export const GALLERY_IMAGES = [
     alt: 'Vishwas and Yashaswini — a glimpse of our story',
     span: '',
   },
+  {
+    src: '/7.jpg',
+    alt: 'Vishwas and Yashaswini — a beautiful memory together',
+    span: '',
+  },
 ];
 
 export const EVENTS = [
