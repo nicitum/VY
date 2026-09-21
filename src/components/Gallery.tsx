@@ -69,12 +69,6 @@ export function Gallery() {
                   loading="lazy"
                   className="h-full w-full object-cover object-[50%_35%] transition-transform duration-[2000ms] group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink-950/60 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                <div className="absolute bottom-0 left-0 right-0 translate-y-4 p-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                  <p className="font-sans text-xs text-cream-200/80">
-                    {image.alt}
-                  </p>
-                </div>
               </button>
             </Reveal>
           ))}

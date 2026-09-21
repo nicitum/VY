@@ -52,14 +52,6 @@ export function ThankYou() {
             <p className="mt-8 font-script text-4xl text-gold-gradient sm:text-5xl">
               Vishwas & Yashaswini
             </p>
-            <p className="mt-4 font-sans text-xs uppercase tracking-[0.3em] text-cream-300/50">
-              14th October 2026 &middot; Tumkur, Karnataka
-            </p>
-
-            <p className="mx-auto mt-8 max-w-xl font-sans text-sm leading-relaxed text-cream-300/60">
-              We can&apos;t wait to celebrate with you, create unforgettable
-              memories together, and seek your blessings for our new beginning.
-            </p>
           </div>
         </Reveal>
       </div>

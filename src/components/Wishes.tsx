@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Send, CheckCircle2 } from 'lucide-react';
-import { Reveal, SectionLabel, Ornament } from '@/components/Decorative';
-
-const WHATSAPP_NUMBER = '917411443520';
-const STORAGE_KEY = 'wedding-wishes-local';
+import { supabase } from '@/lib/supabase';
+import { Reveal, SectionLabel } from '@/components/Decorative';
 
 interface Wish {
   name: string;
@@ -12,30 +10,20 @@ interface Wish {
   created_at: string;
 }
 
-function loadWishes(): Wish[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Wish[]) : [];
-  } catch {
-    return [];
-  }
-}
-
 export function Wishes() {
-  const [wishes, setWishes] = useState<Wish[]>([]);
-
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [attending] = useState('yes');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
 
-  useEffect(() => {
-    setWishes(loadWishes());
-  }, []);
-
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !message.trim()) return;
+    if (!name.trim() || !message.trim() || submitting) return;
+
+    setSubmitting(true);
+    setSubmitError(null);
 
     const wish: Wish = {
       name: name.trim(),
@@ -44,25 +32,20 @@ export function Wishes() {
       created_at: new Date().toISOString(),
     };
 
-    // Keep a local wall of blessings on this device
-    const updated = [wish, ...loadWishes()].slice(0, 24);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    } catch {
-      /* storage unavailable — still send via WhatsApp */
+    // Save to Supabase backend
+    const { error } = await supabase.from('wedding_wishes').insert({
+      name: wish.name,
+      message: wish.message,
+      attending: wish.attending,
+    });
+
+    if (error) {
+      setSubmitError('Could not save your wish. Please check connection and try again.');
+      setSubmitting(false);
+      return;
     }
-    setWishes(updated);
 
-    // Redirect to WhatsApp with the guest's details prefilled
-    const text =
-      `Hello Vishwas & Yashaswini! \u{1F49B}\n\n` +
-      `Name: ${wish.name}\n` +
-      `Wishes: ${wish.message}`;
-    window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`,
-      '_blank'
-    );
-
+    setSubmitting(false);
     setSent(true);
     setName('');
     setMessage('');
@@ -88,8 +71,7 @@ export function Wishes() {
 
         <Reveal delay={300}>
           <p className="mt-4 text-center font-sans text-sm text-cream-300/60">
-            Write a heartfelt message for Vishwas & Yashaswini — it will open
-            in WhatsApp to send to the family
+            Write a heartfelt message for Vishwas & Yashaswini
           </p>
         </Reveal>
 
@@ -105,10 +87,7 @@ export function Wishes() {
                   <CheckCircle2 size={32} strokeWidth={1.5} />
                 </div>
                 <p className="font-display text-2xl text-gold-gradient">
-                  Opening WhatsApp with your blessing… thank you!
-                </p>
-                <p className="font-sans text-sm text-cream-300/50">
-                  Just press send in WhatsApp to deliver it with love.
+                  Your blessing has been sent with love. Thank you!
                 </p>
               </div>
             ) : (
@@ -141,13 +120,20 @@ export function Wishes() {
                   />
                 </div>
 
+                {submitError && (
+                  <p className="text-center font-sans text-sm text-maroon-400">
+                    {submitError}
+                  </p>
+                )}
+
                 <button
                   type="submit"
-                  className="group relative mx-auto flex items-center gap-3 overflow-hidden rounded-full border border-royal-400/30 px-8 py-3.5 font-sans text-xs uppercase tracking-[0.3em] text-royal-300 transition-all duration-500 hover:border-royal-300 hover:text-royal-100"
+                  disabled={submitting}
+                  className="group relative mx-auto flex items-center gap-3 overflow-hidden rounded-full border border-royal-400/30 px-8 py-3.5 font-sans text-xs uppercase tracking-[0.3em] text-royal-300 transition-all duration-500 hover:border-royal-300 hover:text-royal-100 disabled:opacity-50"
                 >
                   <span className="relative z-10 flex items-center gap-3">
-                    Send via WhatsApp
-                    <Send size={14} strokeWidth={1.5} />
+                    {submitting ? 'Sending...' : 'Send Wishes'}
+                    {!submitting && <Send size={14} strokeWidth={1.5} />}
                   </span>
                   <div className="absolute inset-0 bg-royal-500/10 translate-y-full transition-transform duration-500 group-hover:translate-y-0" />
                 </button>
@@ -155,42 +141,6 @@ export function Wishes() {
             )}
           </form>
         </Reveal>
-
-        {/* Blessings wall (saved on this device) */}
-        {wishes.length > 0 && (
-          <Reveal delay={500}>
-            <div className="mt-16">
-              <Ornament className="mb-8" />
-              <h3 className="text-center font-display text-2xl text-cream-200/80 sm:text-3xl">
-                Blessings from our loved ones
-              </h3>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {wishes.map((wish, idx) => (
-                  <div
-                    key={`${wish.created_at}-${idx}`}
-                    className="group rounded-xl border border-royal-400/10 bg-ink-900/30 p-5 transition-all duration-500 hover:border-royal-400/25 hover:bg-ink-900/50"
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="font-display text-lg text-gold-gradient">
-                        {wish.name}
-                      </p>
-                    </div>
-                    <p className="mt-3 font-sans text-sm leading-relaxed text-cream-200/70">
-                      {wish.message}
-                    </p>
-                    <p className="mt-3 font-sans text-[10px] uppercase tracking-wider text-cream-300/30">
-                      {new Date(wish.created_at).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-        )}
       </div>
     </section>
   );
