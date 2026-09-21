@@ -114,14 +114,6 @@ export function Gallery() {
               alt={active.alt}
               className="max-h-[80vh] w-auto max-w-full rounded-xl border border-royal-400/25 object-contain shadow-[0_40px_120px_-20px_rgba(192,136,46,0.4)]"
             />
-            <div className="mt-3 flex items-center justify-center gap-3">
-              <p className="font-sans text-xs tracking-wide text-cream-200/70">
-                {active.alt}
-              </p>
-              <span className="font-sans text-xs text-royal-300/60">
-                {selected + 1} / {GALLERY_IMAGES.length}
-              </span>
-            </div>
           </div>
 
           <button
