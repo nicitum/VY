@@ -25,6 +25,12 @@ export function Wishes() {
     setSubmitting(true);
     setSubmitError(null);
 
+    if (!supabase) {
+      setSubmitError('Wishes service is not connected yet. Please try again later.');
+      setSubmitting(false);
+      return;
+    }
+
     const wish: Wish = {
       name: name.trim(),
       message: message.trim(),

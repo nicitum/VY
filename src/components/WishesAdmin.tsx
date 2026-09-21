@@ -43,6 +43,11 @@ export function WishesAdmin() {
   async function fetchWishes() {
     setLoading(true);
     setError(null);
+    if (!supabase) {
+      setError('Supabase is not connected — add the env keys and redeploy.');
+      setLoading(false);
+      return;
+    }
     const { data, error } = await supabase
       .from('wedding_wishes')
       .select('*')
@@ -63,6 +68,10 @@ export function WishesAdmin() {
 
   async function handleDelete(id: string, name: string) {
     if (!window.confirm(`Delete wish from "${name}"?`)) return;
+    if (!supabase) {
+      alert('Supabase is not connected — add the env keys and redeploy.');
+      return;
+    }
     setDeleting(id);
     const { error } = await supabase.from('wedding_wishes').delete().eq('id', id);
     if (error) {
