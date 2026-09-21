@@ -59,7 +59,7 @@ export const EVENTS = [
     icon: 'rings',
     date: '14th October 2026',
     title: 'Muhurtham',
-    time: '9:30 AM',
+    time: '9:00 AM - 9:30 AM',
     venue: 'Shri Bavi Katte Kalyana Mantapa, Tumkur',
     description:
       'The sacred wedding ceremony where two souls unite in the presence of family, guided by timeless traditions and blessings.',
